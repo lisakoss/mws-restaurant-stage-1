@@ -144,6 +144,10 @@ nav h1 a {
   justify-content: center;
 }
 
+.restaurant-lists-text-area {
+  padding: 0 10px;
+}
+
 #restaurants-list li {
   background-color: #fff;
   border: 2px solid #ccc;
@@ -171,16 +175,14 @@ nav h1 a {
   line-height: 1.3;
   margin: 20px 0 10px;
   text-transform: uppercase;
-  padding: 0 10px;
 }
 #restaurants-list p {
   margin: 0;
   font-size: 11pt;
-  padding: 0 10px;
 }
-#restaurants-list li a {
+#restaurants-list li button {
   background-color: orange;
-  border-bottom: 3px solid #eee;
+  border: none;
   color: #fff;
   display: inline-block;
   font-size: 10pt;
