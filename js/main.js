@@ -178,9 +178,12 @@ createRestaurantHTML = (restaurant) => {
   address.innerHTML = restaurant.address;
   textArea.append(address);
 
-  const more = document.createElement('button');
-  more.innerHTML = 'View Details';
+  const more = document.createElement('a');
   more.href = DBHelper.urlForRestaurant(restaurant);
+  const button = document.createElement('button');
+  button.innerHTML = 'View Details';
+
+  more.append(button);
   textArea.append(more);
 
   li.append(textArea);
