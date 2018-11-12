@@ -164,7 +164,7 @@ createRestaurantHTML = (restaurant) => {
   li.append(image);
 
   const textArea = document.createElement('div');
-  textArea.classList.add('restaurant-lists-text-area');
+  textArea.classList.add('text-area');
 
   const name = document.createElement('h1');
   name.innerHTML = restaurant.name;
