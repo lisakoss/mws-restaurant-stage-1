@@ -8,12 +8,13 @@ self.addEventListener('install', function (event) {
         '/',
         '/index.html',
         '/restaurant.html',
-        '/css/styles.css',
-        '/js/',
-        '/js/dbhelper.js',
-        '/js/main.js',
-        '/js/register_sw.js',
-        '/js/restaurant_info.js'
+        'css/styles.css',
+        'js/',
+        'js/dbhelper.js',
+        'js/main.js',
+        'js/register_sw.js',
+        'js/restaurant_info.js',
+        'data/restaurants.json'
       ]).catch(function(error) {
         console.log('Caches open failed: ', error);
       });
@@ -26,7 +27,7 @@ self.addEventListener('fetch', function(event) {
 
   if (requestUrl.origin === location.origin) {
     if (requestUrl.pathname === '/') {
-      event.respondWith(caches.match('/'));
+      event.respondWith(caches.match('/index.html'));
       return;
     }
 

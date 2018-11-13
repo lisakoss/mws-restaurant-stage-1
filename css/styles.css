@@ -80,6 +80,7 @@ nav h1 a {
     background-color: #eee;
     font-size: 17px;
     margin: 0;
+    text-align: left;
 }
 
 /* Display list items side by side */
@@ -338,16 +339,31 @@ nav h1 a {
 }
 
 #reviews-list li p {
-  margin: 0 0 10px;
+  margin: 0 0 15px;
 }
 
 #reviews-list li p:first-child { 
   font-size: 16pt;
+  display: inline;
 }
 
-#reviews-list li p:nth-child(3) { 
-  color: #f58500;
+#reviews-list li p:nth-child(2) { 
+  float: right;
+}
+
+#reviews-list li p:last-child { 
+  margin: 15px 0 0;
+}
+
+#reviews-list li p:nth-child(4) { 
+  color: #fff;
+  background-color: #f58500;
   font-weight: bold;
+  display: inline-block;
+  padding: 10px;
+  text-transform: uppercase;
+  clear: both;
+  margin: 10px 0 0;
 }
 
 #restaurant-hours-container {
