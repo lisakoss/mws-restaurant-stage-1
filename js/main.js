@@ -179,14 +179,16 @@ createRestaurantHTML = (restaurant) => {
   address.innerHTML = restaurant.address;
   textArea.append(address);
 
-  const more = document.createElement('a');
-  more.href = DBHelper.urlForRestaurant(restaurant);
+  // On click transfers the user to the respective restaurant page.
+  function redirectFunc() {
+    window.location.href = DBHelper.urlForRestaurant(restaurant);
+  }
+
   const button = document.createElement('button');
+  button.onclick = redirectFunc;
   button.innerHTML = 'View Details';
 
-  more.append(button);
-  textArea.append(more);
-
+  textArea.append(button);
   li.append(textArea);
 
   return li;
