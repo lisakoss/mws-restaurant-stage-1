@@ -26,7 +26,7 @@ li {
 }
 
 a {
-	color: orange;
+	color: #d27910;
 	text-decoration: none;
 }
 
@@ -76,12 +76,16 @@ section {
 
 #footer {
   background-color: #444;
-  color: #aaa;
+  color: #fff;
   font-size: 8pt;
   letter-spacing: 1px;
   padding: 25px;
   text-align: center;
   text-transform: uppercase;
+}
+
+#footer a {
+  color: #FCD9AB;
 }
 
 .aria-label {
@@ -216,7 +220,7 @@ nav h1 a {
 }
 
 #restaurants-list li h2 {
-  color: #f18200;
+  color: #d27910;
   font-family: Arial,sans-serif;
   font-size: 16pt;
   font-weight: 200;
@@ -232,7 +236,7 @@ nav h1 a {
 }
 
 #restaurants-list li button {
-  background-color: orange;
+  background-color: #7A4100;
   border: none;
   color: #fff;
   display: inline-block;
@@ -309,7 +313,7 @@ nav h1 a {
 }
 
 #restaurant-name {
-  color: #f18200;
+  color: #d27910;
   font-family: Arial,sans-serif;
   font-size: 24pt;
   font-weight: 200;
@@ -350,7 +354,7 @@ nav h1 a {
 
 #reviews-container h3, 
 #restaurant-hours-container h3 {
-  color: #f58500;
+  color: #d27910;
   font-size: 24pt;
   font-weight: 300;
   letter-spacing: -1px;
@@ -397,7 +401,7 @@ nav h1 a {
 
 #reviews-list li p:nth-child(4) { 
   color: #fff;
-  background-color: #f58500;
+  background-color: #d27910;
   font-weight: bold;
   display: inline-block;
   padding: 10px;
