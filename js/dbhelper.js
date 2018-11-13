@@ -154,18 +154,30 @@ class DBHelper {
   }
 
   /**
+   * Restaurant image srcset URLs.
+   */
+  static imageSrcSetUrlForRestaurant(restaurant, directory) {
+    let image = restaurant.photograph.split(".");
+    let imageName = image[0];
+    let imageType = image[1];
+
+    return (`/img/${directory}/${imageName}_2x.${imageType} 2x, /img/${directory}/${imageName}_1x.${imageType} 1x`);
+  }
+
+  /**
    * Map marker for a restaurant.
    */
-   static mapMarkerForRestaurant(restaurant, map) {
+  static mapMarkerForRestaurant(restaurant, map) {
     // https://leafletjs.com/reference-1.3.0.html#marker  
     const marker = new L.marker([restaurant.latlng.lat, restaurant.latlng.lng],
-      {title: restaurant.name,
-      alt: restaurant.name,
-      url: DBHelper.urlForRestaurant(restaurant)
+      {
+        title: restaurant.name,
+        alt: restaurant.name,
+        url: DBHelper.urlForRestaurant(restaurant)
       })
-      marker.addTo(newMap);
+    marker.addTo(newMap);
     return marker;
-  } 
+  }
   /* static mapMarkerForRestaurant(restaurant, map) {
     const marker = new google.maps.Marker({
       position: restaurant.latlng,
