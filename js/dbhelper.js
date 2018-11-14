@@ -171,18 +171,16 @@ class DBHelper {
    * Restaurant image URL.
    */
   static imageUrlForRestaurant(restaurant) {
-    return (`/img/${restaurant.photograph}`);
+    return (`/img/${restaurant.photograph}.jpg`);
   }
 
   /**
    * Restaurant image srcset URLs.
    */
   static imageSrcSetUrlForRestaurant(restaurant, directory) {
-    let image = restaurant.photograph.split(".");
-    let imageName = image[0];
-    let imageType = image[1];
+    let image = restaurant.photograph;
 
-    return (`/img/${directory}/${imageName}_2x.${imageType} 2x, /img/${directory}/${imageName}_1x.${imageType} 1x`);
+    return (`/img/${directory}/${image}_2x.jpg 2x, /img/${directory}/${image}_1x.jpg 1x`);
   }
 
   /**
