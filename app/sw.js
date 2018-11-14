@@ -1,9 +1,18 @@
+import idb from 'idb';
+
 let staticCacheName = 'mws-restaurant-v1';
 let contentImgsCache = 'mws-restaurant-imgs';
 let allCaches = [
   staticCacheName,
   contentImgsCache
 ];
+
+var dbPromise = idb.open('mws-restaurant', 1, function (upgradeDb) {
+  switch (upgradeDb.oldVersion) {
+    case 0:
+      upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
+  }
+});
 
 self.addEventListener('install', function (event) {
   event.waitUntil(
@@ -17,8 +26,7 @@ self.addEventListener('install', function (event) {
         'js/main.js',
         'js/register_sw.js',
         'js/restaurant_info.js',
-        'data/restaurants.json'
-      ]).catch(function(error) {
+      ]).catch(function (error) {
         console.log('Caches open failed: ', error);
       });
     })
@@ -41,7 +49,7 @@ self.addEventListener('activate', function (event) {
   );
 });
 
-self.addEventListener('fetch', function(event) {
+self.addEventListener('fetch', function (event) {
   let requestUrl = new URL(event.request.url);
 
   if (requestUrl.origin === location.origin) {
@@ -56,11 +64,24 @@ self.addEventListener('fetch', function(event) {
     }
   }
 
-  event.respondWith(
-    caches.match(event.request).then(function (response) {
-      return response || fetch(event.request);
-    })
-  );
+  // ajax request
+  if (requestUrl.port === '1337') {
+    const parts = requestUrl.pathname.split("/");
+  } else { // non ajax request
+    event.respondWith(
+      caches.match(event.request).then(function (response) {
+        return response || fetch(event.request).then(function (networkResponse) {
+          return caches.open(staticCacheName).then(function (cache) {
+            cache.put(event.request, networkResponse.clone());
+            return networkResponse;
+          });
+        })
+        .catch(function (error) {
+          console.log("Offline, could not retrieve response: ", error);
+        })
+      })
+    );
+  }
 });
 
 function serveImg(request) {
@@ -74,7 +95,7 @@ function serveImg(request) {
         cache.put(imgUrl, networkResponse.clone());
         return networkResponse;
       });
-    }).catch(function(error) {
+    }).catch(function (error) {
       console.log("Offline, could not retrieve response: ", error);
     })
   });
