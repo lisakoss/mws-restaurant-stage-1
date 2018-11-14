@@ -67,6 +67,38 @@ self.addEventListener('fetch', function (event) {
   // ajax request
   if (requestUrl.port === '1337') {
     const parts = requestUrl.pathname.split("/");
+    let id;
+
+    if(parts[parts.length - 1] === "restaurants") {
+      id = -1;
+    } else {
+      id = parts[parts.length - 1];
+    }
+
+    event.respondWith(
+      dbPromise.then(function(db) {
+        return db.transaction('restaurants')
+          .objectStore('restaurants')
+          .get(id);
+      }).then(function(data) {
+        return (data && data.data) || fetch(event.request).then(function (networkResponse) {
+          return networkResponse.json().then(function(fetchJson) {
+            return dbPromise.then(function (db) {
+              const tx = db.transaction('restaurants', 'readwrite');
+              tx.objectStore('restaurants').put({
+                id: id,
+                data: fetchJson
+              });
+              return fetchJson;
+            });
+          })
+        })
+      }).then(function (finalData) {
+        return new Response(JSON.stringify(finalData));
+      }).catch(function (error) {
+        console.log("Error could not fetch response: ", error);
+      })
+    );
   } else { // non ajax request
     event.respondWith(
       caches.match(event.request).then(function (response) {
@@ -75,8 +107,7 @@ self.addEventListener('fetch', function (event) {
             cache.put(event.request, networkResponse.clone());
             return networkResponse;
           });
-        })
-        .catch(function (error) {
+        }).catch(function (error) {
           console.log("Offline, could not retrieve response: ", error);
         })
       })

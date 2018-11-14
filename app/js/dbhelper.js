@@ -18,18 +18,18 @@ class DBHelper {
   static fetchRestaurants(callback, id) {
     let fetchUrl;
 
+
     if (!id) { // all restaurants
       fetchUrl = DBHelper.DATABASE_URL;
     } else { // by restaurant id
       fetchUrl = `${DBHelper.DATABASE_URL}/${id}`;
     }
-
+    
     fetch(fetchUrl)
       .then(function (response) {
         return response.json();
       })
       .then(function (restaurants) {
-        console.log('restaurant json data', restaurants);
         callback(null, restaurants);
       })
       .catch(function (error) {
@@ -61,14 +61,15 @@ class DBHelper {
       if (error) {
         callback(error, null);
       } else {
-        const restaurant = restaurants.find(r => r.id == id);
+        //const restaurant = restaurants.find(r => r.id == id);
+        const restaurant = restaurants;
         if (restaurant) { // Got the restaurant
           callback(null, restaurant);
         } else { // Restaurant does not exist in the database
           callback('Restaurant does not exist', null);
         }
       }
-    });
+    }, id);
   }
 
   /**
