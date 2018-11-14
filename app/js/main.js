@@ -161,7 +161,7 @@ const createRestaurantHTML = (restaurant) => {
   const image = document.createElement('img');
   image.className = 'restaurant-img';
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
-  image.srcset = DBHelper.imageSrcSetUrlForRestaurant(restaurant, "tiles");
+  image.srcset = DBHelper.imageSrcSetUrlForRestaurant(restaurant, 'tiles');
   image.alt = `${restaurant.name} promotional image`;
   li.append(image);
 
@@ -170,7 +170,7 @@ const createRestaurantHTML = (restaurant) => {
 
   const name = document.createElement('h2');
   name.innerHTML = restaurant.name;
-  name.tabIndex = "0";
+  name.tabIndex = '0';
   textArea.append(name);
 
   const neighborhood = document.createElement('p');
@@ -203,7 +203,7 @@ const addMarkersToMap = (restaurants = self.restaurants) => {
   restaurants.forEach(restaurant => {
     // Add marker to the map
     const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.newMap);
-    marker.on("click", onClick);
+    marker.on('click', onClick);
     function onClick() {
       window.location.href = marker.options.url;
     }
