@@ -21,7 +21,7 @@
       <h1><a href="/">Restaurant Reviews</a></h1>
     </nav>
     <!-- Beginning breadcrumb -->
-    <nav aria-label="Breadcrumb">
+    <nav role="navigation" aria-label="Breadcrumb">
       <ol id="breadcrumb">
         <li><a href="/">Home</a></li>
       </ol>
@@ -37,19 +37,19 @@
     <section id="restaurant-container">
       <h2 id="restaurant-name"></h2>
       <img id="restaurant-img">
-      <p id="restaurant-cuisine"></p>
+      <p tabindex="0" id="restaurant-cuisine"></p>
       <label id="address-label" class="aria-label">Address</label>
       <p aria-labelledby="address-label" id="restaurant-address"></p>
     </section>
     <!-- end restaurant -->
     <!-- Beginning map -->
-    <section aria-labelledby="map-label" id="map-container" role="application">
+    <section tabindex="-1" aria-labelledby="map-label" id="map-container" role="application">
       <label id="map-label" class="aria-label">Mapbox application</label>
       <div id="map"></div>
     </section>
 
     <section id="restaurant-hours-container">
-      <h3>Restaurant Hours</h3>
+      <h3 tabindex="0">Restaurant Hours</h3>
       <table id="restaurant-hours"></table>
     </section>
     <!-- End map -->
