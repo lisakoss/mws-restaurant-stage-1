@@ -202,7 +202,8 @@ const createRestaurantHTML = (restaurant) => {
   const favoriteBtn = document.createElement('button');
   favoriteBtn.classList.add(`favorite-button`);
   const favoriteIcon = document.createElement('i'); // font awesome icon
-  favoriteIcon.id = `favorite-${restaurant.id}`
+  favoriteBtn.id = `favorite-${restaurant.id}`
+  favoriteIcon.id = `favorite-icon-${restaurant.id}`
 
   if (isFavorite) { // a favorite; filled heart
     favoriteIcon.classList.add('fas');
@@ -212,7 +213,6 @@ const createRestaurantHTML = (restaurant) => {
 
   favoriteIcon.classList.add('fa-heart');
   favoriteBtn.onclick = function () {
-    console.log("curr", restaurant["is_favorite"])
     toggleFavorite(restaurant.id, !isFavorite);
   }
 
@@ -229,9 +229,9 @@ const createRestaurantHTML = (restaurant) => {
  */
 
 const toggleFavorite = (restaurantId, isFavorite) => {
-  console.log("id", restaurantId);
-  console.log("fav", isFavorite);
-
+  const favoriteBtn = document.getElementById(`favorite-${restaurantId}`);
+  favoriteBtn.onclick = null;
+  favoriteBtn.onclick = event => toggleFavorite(restaurantId, !isFavorite);
 
   DBHelper.handleFavorite(restaurantId, isFavorite);
 }

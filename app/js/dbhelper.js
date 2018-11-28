@@ -171,13 +171,7 @@ class DBHelper {
         return;
       }
 
-      const favoriteBtn = document.getElementById(`favorite-${result.restaurantId}`);
-      let resultFav = false;
-      if (result.isFavorite && result.isFavorite.toString() === 'true') {
-        //isFavorite = true;
-        console.log("true")
-      }
-      console.log("??", result.isFavorite);
+      const favoriteBtn = document.getElementById(`favorite-icon-${result.restaurantId}`);
 
       if(result.isFavorite) {
         favoriteBtn.classList.add("fas");
