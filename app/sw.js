@@ -26,6 +26,7 @@ self.addEventListener('install', function (event) {
         'js/main.js',
         'js/register_sw.js',
         'js/restaurant_info.js',
+        'https://use.fontawesome.com/releases/v5.5.0/css/all.css',
       ]).catch(function (error) {
         console.log('Caches open failed: ', error);
       });

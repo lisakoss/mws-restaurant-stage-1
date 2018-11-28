@@ -235,9 +235,10 @@ nav h1 a {
   font-size: 11pt;
 }
 
-.favorite-button button {
+.favorite-button {
   border: none;
   color: #F55454;
+  background-color: #fff;
   font-size: 20pt;
   margin: 0;
   padding: 15px 0 0;

@@ -1,6 +1,9 @@
+import idb from 'idb';
+
 /**
  * Common database helper functions.
  */
+
 class DBHelper {
 
   /**
@@ -24,7 +27,7 @@ class DBHelper {
     } else { // by restaurant id
       fetchUrl = `${DBHelper.DATABASE_URL}/${id}`;
     }
-    
+
     fetch(fetchUrl)
       .then(function (response) {
         return response.json();
@@ -36,7 +39,7 @@ class DBHelper {
         let errorStatement = (`Request failed. Returned ${error}`);
         callback(errorStatement, null);
       })
-      
+
     /*let xhr = new XMLHttpRequest();w
     xhr.open('GET', DBHelper.DATABASE_URL);
     xhr.onload = () => {
@@ -161,6 +164,71 @@ class DBHelper {
     });
   }
 
+  static handleFavorite(restaurantId, isFavorite) {
+    DBHelper.updateFavorite(restaurantId, isFavorite, (error, result) => {
+      if (error) {
+        console.log("Error updating favorite.");
+        return;
+      }
+
+      const favoriteBtn = document.getElementById(`favorite-${result.restaurantId}`);
+      let resultFav = false;
+      if (result.isFavorite && result.isFavorite.toString() === 'true') {
+        //isFavorite = true;
+        console.log("true")
+      }
+      console.log("??", result.isFavorite);
+
+      if(result.isFavorite) {
+        favoriteBtn.classList.add("fas");
+        favoriteBtn.classList.remove("far");
+      } else {
+        favoriteBtn.classList.add("far");
+        favoriteBtn.classList.remove("fas");
+      }
+    })
+  }
+
+  static updateFavorite(restaurantId, isFavorite, callback) {
+    DBHelper.updateRestaurantData(restaurantId, { "is_favorite": isFavorite });
+    callback(null, { restaurantId, isFavorite });
+  }
+
+  static updateRestaurantData(id, updateObj) {
+    let dbPromise = idb.open('mws-restaurant');
+
+    dbPromise.then(function(db) {
+      let tx = db.transaction('restaurants', 'readwrite');
+      let restaurantsStore = tx.objectStore('restaurants');
+
+      // update all restaurant data
+      restaurantsStore.get(-1).then(function(value) {
+        // no cache
+        if(!value) {
+          console.log("No cached data retrieved");
+          return;
+        }
+
+        const restaurantData = value.data[id - 1];
+        if (!restaurantData) {
+          console.log("No restaurant data retrieved");
+          return;
+        }
+
+        let updateKeys = Object.keys(updateObj);
+        for(let key in updateKeys) {
+          let updateAttribute = updateKeys[key];
+          restaurantData[updateAttribute] = updateObj[updateAttribute];
+        }
+
+        dbPromise.then(function(db) {
+          restaurantsStore.put({id: -1, data: value.data});
+          return tx.complete;
+        })
+      })
+    })
+  }
+
   /**
    * Restaurant page URL.
    */
@@ -211,3 +279,4 @@ class DBHelper {
 
 }
 
+window.DBHelper = DBHelper;

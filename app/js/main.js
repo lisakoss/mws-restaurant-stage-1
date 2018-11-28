@@ -73,10 +73,10 @@ const fillCuisinesHTML = (cuisines = self.cuisines) => {
  */
 const initMap = () => {
   self.newMap = L.map('map', {
-        center: [40.722216, -73.987501],
-        zoom: 12,
-        scrollWheelZoom: false
-      });
+    center: [40.722216, -73.987501],
+    zoom: 12,
+    scrollWheelZoom: false
+  });
   L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.jpg70?access_token={mapboxToken}', {
     mapboxToken: 'pk.eyJ1IjoibGlzYWtvc3MiLCJhIjoiY2ptcGNqb3FoMWR4eTNwcGRja3YxdW9jeiJ9.tqARyWdvATWCwlXgmS8kLg',
     maxZoom: 18,
@@ -193,12 +193,28 @@ const createRestaurantHTML = (restaurant) => {
 
   textArea.append(detailsBtn);
 
+  let isFavorite = false;
+  if (restaurant['is_favorite'] && restaurant['is_favorite'].toString() === 'true') {
+    isFavorite = true;
+  }
+
   const favoriteBtnDiv = document.createElement('div');
   const favoriteBtn = document.createElement('button');
-  favoriteBtnDiv.classList.add('favorite-button');
+  favoriteBtn.classList.add(`favorite-button`);
   const favoriteIcon = document.createElement('i'); // font awesome icon
-  favoriteIcon.classList.add('far');
+  favoriteIcon.id = `favorite-${restaurant.id}`
+
+  if (isFavorite) { // a favorite; filled heart
+    favoriteIcon.classList.add('fas');
+  } else { // not a favorite; unfilled heart
+    favoriteIcon.classList.add('far');
+  }
+
   favoriteIcon.classList.add('fa-heart');
+  favoriteBtn.onclick = function () {
+    console.log("curr", restaurant["is_favorite"])
+    toggleFavorite(restaurant.id, !isFavorite);
+  }
 
   favoriteBtn.append(favoriteIcon);
   favoriteBtnDiv.append(favoriteBtn);
@@ -206,6 +222,18 @@ const createRestaurantHTML = (restaurant) => {
   li.append(textArea);
 
   return li;
+}
+
+/**
+ * Toggle favorite on individual restaurants.
+ */
+
+const toggleFavorite = (restaurantId, isFavorite) => {
+  console.log("id", restaurantId);
+  console.log("fav", isFavorite);
+
+
+  DBHelper.handleFavorite(restaurantId, isFavorite);
 }
 
 /**
@@ -222,7 +250,7 @@ const addMarkersToMap = (restaurants = self.restaurants) => {
     self.markers.push(marker);
   });
 
-} 
+}
 /* addMarkersToMap = (restaurants = self.restaurants) => {
   restaurants.forEach(restaurant => {
     // Add marker to the map

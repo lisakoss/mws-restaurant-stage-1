@@ -25,7 +25,7 @@ gulp.task('css', () => {
 });
 
 gulp.task('js', () => {
-  return gulp.src('app/js/**/*.js')
+  return gulp.src(["app/js/**/*.js", "!app/js/**/dbhelper.js"])
     .pipe($.plumber())
     .pipe($.if(dev, $.sourcemaps.init()))
     .pipe($.babel())
@@ -47,6 +47,19 @@ gulp.task('sw', () => {
     .pipe(gulp.dest('.tmp/'))
 })
 
+gulp.task("dbhelper", () => {
+  const b = browserify({
+    debug: true
+  });
+
+  return b
+    .transform(babelify)
+    .require("app/js/dbhelper.js", { entry: true })
+    .bundle()
+    .pipe(source("dbhelper.js"))
+    .pipe(gulp.dest(".tmp/js/"));
+});
+
 function lint(files) {
   return gulp.src(files)
     .pipe($.eslint({ fix: true }))
@@ -64,7 +77,7 @@ gulp.task('lint:test', () => {
     .pipe(gulp.dest('test/spec'));
 });
 
-gulp.task('html', ['css', 'js', 'sw'], () => {
+gulp.task('html', ['css', 'js', 'dbhelper', 'sw'], () => {
   return gulp.src('app/*.html')
     .pipe($.useref({searchPath: ['.tmp', 'app', '.']}))
     .pipe($.if(/\.js$/, $.uglify({compress: {drop_console: true}})))
@@ -100,7 +113,7 @@ gulp.task('extras', () => {
 gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
 
 gulp.task('serve', () => {
-  runSequence(['clean', 'wiredep'], ['css', 'js', 'sw'], () => {
+  runSequence(['clean', 'wiredep'], ['css', 'js', 'dbhelper', 'sw'], () => {
     browserSync.init({
       notify: false,
       port: 9000,
@@ -118,7 +131,7 @@ gulp.task('serve', () => {
     ]).on('change', reload);
 
     gulp.watch('app/css/**/*.css', ['css']);
-    gulp.watch('app/js/**/*.js', ['js']);
+    gulp.watch('app/js/**/*.js', ['js', 'dbhelper']);
     gulp.watch('app/sw.js', ['sw']);
     gulp.watch('bower.json', ['wiredep']);
   });
