@@ -173,7 +173,7 @@ class DBHelper {
 
       const favoriteBtn = document.getElementById(`favorite-icon-${result.restaurantId}`);
 
-      if(result.isFavorite) {
+      if (result.isFavorite) {
         favoriteBtn.classList.add("fas");
         favoriteBtn.classList.remove("far");
       } else {
@@ -191,14 +191,14 @@ class DBHelper {
   static updateRestaurantData(id, updateObj) {
     let dbPromise = idb.open('mws-restaurant');
 
-    dbPromise.then(function(db) {
+    // update all restaurant data
+    dbPromise.then(function (db) {
       let tx = db.transaction('restaurants', 'readwrite');
       let restaurantsStore = tx.objectStore('restaurants');
 
-      // update all restaurant data
-      restaurantsStore.get(-1).then(function(value) {
+      restaurantsStore.get(-1).then(function (value) {
         // no cache
-        if(!value) {
+        if (!value) {
           console.log("No cached data retrieved");
           return;
         }
@@ -210,13 +210,48 @@ class DBHelper {
         }
 
         let updateKeys = Object.keys(updateObj);
-        for(let key in updateKeys) {
+        for (let key in updateKeys) {
+          let updateAttribute = updateKeys[key];
+          console.log('update""', updateAttribute)
+          console.log("restDAta", restaurantData[updateAttribute]);
+          console.log("updateObj", updateObj[updateAttribute])
+          restaurantData[updateAttribute] = updateObj[updateAttribute];
+        }
+
+        dbPromise.then(function (db) {
+          console.log("value.data", value.data)
+          restaurantsStore.put({ id: -1, data: value.data });
+          return tx.complete;
+        })
+      })
+    })
+
+    // update specific restaurant data
+    dbPromise.then(function (db) {
+      let tx = db.transaction('restaurants', 'readwrite');
+      let restaurantsStore = tx.objectStore('restaurants');
+
+      restaurantsStore.get(id.toString()).then(function (value) {
+        // no cache
+        if (!value) {
+          console.log("No cached data retrieved");
+          return;
+        }
+
+        const restaurantData = value.data;
+        if (!restaurantData) {
+          console.log("No restaurant data retrieved");
+          return;
+        }
+
+        let updateKeys = Object.keys(updateObj);
+        for (let key in updateKeys) {
           let updateAttribute = updateKeys[key];
           restaurantData[updateAttribute] = updateObj[updateAttribute];
         }
 
-        dbPromise.then(function(db) {
-          restaurantsStore.put({id: -1, data: value.data});
+        dbPromise.then(function (db) {
+          restaurantsStore.put({ id: id.toString(), data: value.data });
           return tx.complete;
         })
       })

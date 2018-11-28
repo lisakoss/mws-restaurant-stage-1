@@ -395,6 +395,14 @@ nav h1 a {
   width: 100%;
 }
 
+#restaurant-container h2 {
+  margin-bottom: 0;
+}
+
+#restaurant-favorite div button {
+  background: #f3f3f3;
+}
+
 #reviews-container h3, 
 #restaurant-hours-container h3 {
   color: #8A500C;
