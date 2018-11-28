@@ -186,11 +186,23 @@ const createRestaurantHTML = (restaurant) => {
     window.location.href = DBHelper.urlForRestaurant(restaurant);
   }
 
-  const button = document.createElement('button');
-  button.onclick = redirectFunc;
-  button.innerHTML = 'View Details';
+  const detailsBtn = document.createElement('button');
+  detailsBtn.classList.add('details-button');
+  detailsBtn.onclick = redirectFunc;
+  detailsBtn.innerHTML = 'View Details';
 
-  textArea.append(button);
+  textArea.append(detailsBtn);
+
+  const favoriteBtnDiv = document.createElement('div');
+  const favoriteBtn = document.createElement('button');
+  favoriteBtnDiv.classList.add('favorite-button');
+  const favoriteIcon = document.createElement('i'); // font awesome icon
+  favoriteIcon.classList.add('far');
+  favoriteIcon.classList.add('fa-heart');
+
+  favoriteBtn.append(favoriteIcon);
+  favoriteBtnDiv.append(favoriteBtn);
+  textArea.append(favoriteBtnDiv);
   li.append(textArea);
 
   return li;
