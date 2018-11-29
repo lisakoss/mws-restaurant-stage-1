@@ -275,14 +275,15 @@ class DBHelper {
       let tx = db.transaction('restaurants', 'readwrite');
       let restaurantsStore = tx.objectStore('restaurants');
 
-      restaurantsStore.get(-1).then(function (value) {
+      restaurantsStore.get("-1").then(function (value) {
+        console.log("value of rest", value);
         // no cache
         if (!value) {
           console.log("No cached data retrieved");
           return;
         }
 
-        const restaurantData = value.data[id - 1];
+        const restaurantData = value.data[id - 1 + ""];
         if (!restaurantData) {
           console.log("No restaurant data retrieved");
           return;
@@ -299,7 +300,7 @@ class DBHelper {
 
         dbPromise.then(function (db) {
           console.log("value.data", value.data)
-          restaurantsStore.put({ id: -1, data: value.data });
+          restaurantsStore.put({ id: "-1", data: value.data });
           return tx.complete;
         })
       })
