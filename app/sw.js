@@ -97,17 +97,17 @@ self.addEventListener('fetch', function (event) {
     console.log("event request", event.request.url);
 
     // handle reviews
-    if(event.request.url.indexOf("reviews") > -1) {
+    if (event.request.url.indexOf("reviews") > -1) {
       console.log("the reviewwwsss")
       event.respondWith(
-        dbPromise.then(function(db) {
+        dbPromise.then(function (db) {
           return db.transaction('reviews')
             .objectStore('reviews')
             .index('restaurant_id')
             .getAll(id);
-        }).then(function(data) {
+        }).then(function (data) {
           return (data.length && data) || fetch(event.request).then(function (networkResponse) {
-            return networkResponse.json().then(function(fetchJson) {
+            return networkResponse.json().then(function (fetchJson) {
               return dbPromise.then(function (db) {
                 const tx = db.transaction('reviews', 'readwrite');
                 const reviewsStore = tx.objectStore('reviews');
@@ -125,13 +125,13 @@ self.addEventListener('fetch', function (event) {
           })
         }).then(function (finalData) {
           console.log("fetch final", finalData)
-          if(finalData[0].data) {
+          if (finalData[0].data) {
             let transformResponse = finalData.map(review => review.data);
             return new Response(JSON.stringify(transformResponse));
           }
 
           return new Response(JSON.stringify(finalData));
-        }).catch(function(error) {
+        }).catch(function (error) {
           console.log("Error could not fetch response: ", error);
         })
       )
