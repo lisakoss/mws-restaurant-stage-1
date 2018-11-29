@@ -80,34 +80,6 @@ const fetchRestaurantFromURL = (callback) => {
  * Create restaurant HTML and add it to the webpage
  */
 const fillRestaurantHTML = (restaurant = self.restaurant) => {
-  let isFavorite = false;
-  if (restaurant['is_favorite'] && restaurant['is_favorite'].toString() === 'true') {
-    isFavorite = true;
-  }
-
-  const favoriteBtnDiv = document.createElement('div');
-  const favoriteBtn = document.createElement('button');
-  favoriteBtn.classList.add(`favorite-button`);
-  const favoriteIcon = document.createElement('i'); // font awesome icon
-  favoriteBtn.id = `favorite-${restaurant.id}`
-  favoriteIcon.id = `favorite-icon-${restaurant.id}`
-
-  if (isFavorite) { // a favorite; filled heart
-    favoriteIcon.classList.add('fas');
-  } else { // not a favorite; unfilled heart
-    favoriteIcon.classList.add('far');
-  }
-
-  favoriteIcon.classList.add('fa-heart');
-  favoriteBtn.onclick = function () {
-    toggleFavorite(restaurant.id, !isFavorite);
-  }
-
-  favoriteBtn.append(favoriteIcon);
-  favoriteBtnDiv.append(favoriteBtn);
-  const restaurantFavorite = document.getElementById('restaurant-favorite');
-  restaurantFavorite.append(favoriteBtnDiv);
-
   const name = document.getElementById('restaurant-name');
   name.innerHTML = restaurant.name;
 
@@ -129,19 +101,6 @@ const fillRestaurantHTML = (restaurant = self.restaurant) => {
   }
   // fill reviews
   fillReviewsHTML();
-}
-
-/**
- * Toggle favorite on individual restaurants.
- */
-
-const toggleFavorite = (restaurantId, isFavorite) => {
-  console.log("id??", restaurantId)
-  const favoriteBtn = document.getElementById(`favorite-${restaurantId}`);
-  favoriteBtn.onclick = null;
-  favoriteBtn.onclick = event => toggleFavorite(restaurantId, !isFavorite);
-
-  DBHelper.handleFavorite(restaurantId, isFavorite);
 }
 
 /**
@@ -173,6 +132,14 @@ const fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   title.innerHTML = 'Reviews';
   title.tabIndex = '0';
   container.appendChild(title);
+
+  const writeReview = document.createElement('a');
+  const reviewLinkText = document.createTextNode('Write a Review');
+  writeReview.append(reviewLinkText);
+  writeReview.title = 'Write a Review';
+  writeReview.href = `/review.html?id=${restaurant.id}`;
+
+  container.appendChild(writeReview);
 
   if (!reviews) {
     const noReviews = document.createElement('p');
