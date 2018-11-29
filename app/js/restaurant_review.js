@@ -90,12 +90,6 @@ const saveReview = () => {
   let rating = document.getElementById('rating').value;
   let comments = document.getElementById('comments').value;
 
-  console.log("name", name);
-  console.log("rating", rating);
-  console.log("comments", comments);
-
-  console.log("id of rest", self.restaurant.id);
-
   DBHelper.handleReview(self.restaurant.id, name, rating, comments, (error, review) => {
     if (error) {
       console.log("Review could not be saved");

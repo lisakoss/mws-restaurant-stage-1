@@ -15,6 +15,11 @@ class DBHelper {
     return `http://localhost:${port}/restaurants`;
   }
 
+  static get DATABASE_REVIEWS_URL() {
+    const port = 1337
+    return `http://localhost:${port}/reviews`
+  }
+
   /**
    * Fetch all restaurants.
    */
@@ -73,6 +78,18 @@ class DBHelper {
         }
       }
     }, id);
+  }
+
+  static fetchRestaurantReviewsById(id, callback) {
+    const fetchUrl = `${DBHelper.DATABASE_REVIEWS_URL}/?restaurant_id=${id}`
+
+    fetch(fetchUrl).then(function(response) {
+      return response.json();
+    }).then(function(result) {
+      callback(null, result);
+    }).catch(function(error) {
+      callback(error, null);
+    })
   }
 
   /**
@@ -193,7 +210,8 @@ class DBHelper {
       "restaurant_id": restaurantId,
       "name": name,
       "rating": rating,
-      "comments": comments
+      "comments": comments,
+      "createdAt": Date.now(),
     }
 
     DBHelper.saveReview(restaurantId, body, (error, result) => {
@@ -212,16 +230,41 @@ class DBHelper {
 
   static updateReviewData(id, updateObj) {
     let dbPromise = idb.open('mws-restaurant');
+    let reviewId = Date.now();
     dbPromise.then(function (db) {
       let tx = db.transaction('reviews', 'readwrite');
       let reviewsStore = tx.objectStore('reviews');
       reviewsStore.put({
         'restaurant_id': id,
         data: updateObj,
+        id: reviewId,
       });
 
       return tx.complete;
     })
+
+    let data = {
+      "restaurant_id": id,
+      "name": updateObj["name"],
+      "rating": updateObj["rating"],
+      "comments": updateObj["comments"]
+  }
+
+    return fetch(`http://localhost:1337/reviews`, {
+      method: "POST", // *GET, POST, PUT, DELETE, etc.
+      mode: "cors", // no-cors, cors, *same-origin
+      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: "same-origin", // include, *same-origin, omit
+      headers: {
+          "Content-Type": "application/json; charset=utf-8",
+          // "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: JSON.stringify(data), // body data type must match "Content-Type" header
+  })
+  .then(function(response) {
+    console.log("response", response.json())
+    response.json();
+  }); // parses response to JSON
   }
 
   static updateRestaurantData(id, updateObj) {

@@ -12,7 +12,7 @@ var dbPromise = idb.open('mws-restaurant', 2, function (upgradeDb) {
     case 0:
       upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
     case 1:
-      let reviewsStore = upgradeDb.createObjectStore('reviews', { keyPath: 'id', autoIncrement: true });
+      let reviewsStore = upgradeDb.createObjectStore('reviews', { keyPath: 'id' });
       reviewsStore.createIndex('restaurant_id', 'restaurant_id');
   }
 });
@@ -72,13 +72,26 @@ self.addEventListener('fetch', function (event) {
 
   // ajax request
   if (requestUrl.port === '1337') {
-    const parts = requestUrl.pathname.split("/");
+    const checkURL = new URL(event.request.url)
     let id;
-
-    if (parts[parts.length - 1] === "restaurants") {
-      id = -1;
-    } else {
-      id = parts[parts.length - 1];
+    if (checkURL.port === "1337") {
+      const parts = checkURL
+        .pathname
+        .split("/");
+      id = checkURL
+        .searchParams
+        .get("restaurant_id") - 0;
+      if (!id) {
+        if (checkURL.pathname.indexOf("restaurants")) {
+          id = parts[parts.length - 1] === "restaurants"
+            ? "-1"
+            : parts[parts.length - 1];
+        } else {
+          id = checkURL
+            .searchParams
+            .get("restaurant_id");
+        }
+      }
     }
 
     console.log("event request", event.request.url);
@@ -93,7 +106,7 @@ self.addEventListener('fetch', function (event) {
             .index('restaurant_id')
             .getAll(id);
         }).then(function(data) {
-          return (data && data.data) || fetch(event.request).then(function (networkResponse) {
+          return (data.length && data) || fetch(event.request).then(function (networkResponse) {
             return networkResponse.json().then(function(fetchJson) {
               return dbPromise.then(function (db) {
                 const tx = db.transaction('reviews', 'readwrite');
@@ -105,20 +118,21 @@ self.addEventListener('fetch', function (event) {
                     "restaurant_id": review["restaurant_id"],
                     data: review,
                   });
-                  return fetchJson;
                 });
+                return fetchJson;
               })
-            }).then(function (finalData) {
-              if(finalData[0].data) {
-                let transformResponse = finalData.map(review => review.data);
-                return new Response(JSON.stringify(transformResponse));
-              }
-
-              return new Response(JSON.stringify(finalData));
-            }).catch(function(error) {
-              console.log("Error could not fetch response: ", error);
             })
           })
+        }).then(function (finalData) {
+          console.log("fetch final", finalData)
+          if(finalData[0].data) {
+            let transformResponse = finalData.map(review => review.data);
+            return new Response(JSON.stringify(transformResponse));
+          }
+
+          return new Response(JSON.stringify(finalData));
+        }).catch(function(error) {
+          console.log("Error could not fetch response: ", error);
         })
       )
     } else { // handle restaurant 
