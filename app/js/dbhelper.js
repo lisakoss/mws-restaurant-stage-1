@@ -188,6 +188,42 @@ class DBHelper {
     callback(null, { restaurantId, isFavorite });
   }
 
+  static handleReview(restaurantId, name, rating, comments, callback) {
+    const body = {
+      "restaurant_id": restaurantId,
+      "name": name,
+      "rating": rating,
+      "comments": comments
+    }
+
+    DBHelper.saveReview(restaurantId, body, (error, result) => {
+      if (error) {
+        callback(error, null);
+        return;
+      }
+      callback(null, result);
+    })
+  }
+
+  static saveReview(restaurantId, updateObj, callback) {
+    DBHelper.updateReviewData(restaurantId, updateObj);
+    callback(null, null);
+  }
+
+  static updateReviewData(id, updateObj) {
+    let dbPromise = idb.open('mws-restaurant');
+    dbPromise.then(function (db) {
+      let tx = db.transaction('reviews', 'readwrite');
+      let reviewsStore = tx.objectStore('reviews');
+      reviewsStore.put({
+        'restaurant_id': id,
+        data: updateObj,
+      });
+
+      return tx.complete;
+    })
+  }
+
   static updateRestaurantData(id, updateObj) {
     let dbPromise = idb.open('mws-restaurant');
 

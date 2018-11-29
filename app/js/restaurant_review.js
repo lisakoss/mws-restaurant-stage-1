@@ -4,7 +4,7 @@ var newMap;
 /**
  * Initialize map as soon as the page is loaded.
  */
-document.addEventListener('DOMContentLoaded', (event) => {  
+document.addEventListener('DOMContentLoaded', (event) => {
   initMap();
 });
 
@@ -13,9 +13,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
  */
 const initMap = () => {
   fetchRestaurantFromURL((error, restaurant) => {
-      fillBreadcrumb();
-    })
-}  
+    fillBreadcrumb();
+  })
+}
 
 /**
  * Get current restaurant from page URL.
@@ -62,7 +62,7 @@ const fillRestaurantHTML = (restaurant = self.restaurant) => {
 /**
  * Add restaurant name to the breadcrumb navigation menu
  */
-const fillBreadcrumb = (restaurant=self.restaurant) => {
+const fillBreadcrumb = (restaurant = self.restaurant) => {
   const breadcrumb = document.getElementById('breadcrumb');
   const li = document.createElement('li');
   li.innerHTML = restaurant.name;
@@ -86,11 +86,21 @@ const getParameterByName = (name, url) => {
 }
 
 const saveReview = () => {
-    let name = document.getElementById('name').value;
-    let rating = document.getElementById('rating').value;
-    let comments = document.getElementById('comments').value;
+  let name = document.getElementById('name').value;
+  let rating = document.getElementById('rating').value;
+  let comments = document.getElementById('comments').value;
 
-    console.log("name", name);
-    console.log("rating", rating);
-    console.log("comments", comments);
+  console.log("name", name);
+  console.log("rating", rating);
+  console.log("comments", comments);
+
+  console.log("id of rest", self.restaurant.id);
+
+  DBHelper.handleReview(self.restaurant.id, name, rating, comments, (error, review) => {
+    if (error) {
+      console.log("Review could not be saved");
+    }
+
+    window.location.href = `/restaurant.html?id=${self.restaurant.id}`;
+  })
 }
