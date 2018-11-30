@@ -83,11 +83,11 @@ class DBHelper {
   static fetchRestaurantReviewsById(id, callback) {
     const fetchUrl = `${DBHelper.DATABASE_REVIEWS_URL}/?restaurant_id=${id}`
 
-    fetch(fetchUrl).then(function(response) {
+    fetch(fetchUrl).then(function (response) {
       return response.json();
-    }).then(function(result) {
+    }).then(function (result) {
       callback(null, result);
-    }).catch(function(error) {
+    }).catch(function (error) {
       callback(error, null);
     })
   }
@@ -248,7 +248,7 @@ class DBHelper {
       "name": updateObj["name"],
       "rating": updateObj["rating"],
       "comments": updateObj["comments"]
-  }
+    }
 
     return fetch(`http://localhost:1337/reviews`, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
@@ -256,15 +256,15 @@ class DBHelper {
       cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
       credentials: "same-origin", // include, *same-origin, omit
       headers: {
-          "Content-Type": "application/json; charset=utf-8",
-          // "Content-Type": "application/x-www-form-urlencoded",
+        "Content-Type": "application/json; charset=utf-8",
+        // "Content-Type": "application/x-www-form-urlencoded",
       },
       body: JSON.stringify(data), // body data type must match "Content-Type" header
-  })
-  .then(function(response) {
-    console.log("response", response.json())
-    response.json();
-  }); // parses response to JSON
+    })
+      .then(function (response) {
+        console.log("response", response.json())
+        response.json();
+      }); // parses response to JSON
   }
 
   static updateRestaurantData(id, updateObj) {
@@ -283,7 +283,7 @@ class DBHelper {
           return;
         }
 
-        const restaurantData = value.data[id - 1 + ""];
+        const restaurantData = value.data[(id - 1).toString()];
         if (!restaurantData) {
           console.log("No restaurant data retrieved");
           return;
@@ -291,6 +291,36 @@ class DBHelper {
 
         let updateKeys = Object.keys(updateObj);
         for (let key in updateKeys) {
+          /* 
+          offline storage help + background sync tutorial:
+          https://www.twilio.com/blog/2017/02/send-messages-when-youre-back-online-with-service-workers-and-background-sync.html
+          */
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').then(function (reg) {
+              if ('sync' in reg) {
+                // do stuff here
+                let favoriteMessage = {
+                  method: 'PUT',
+                  url: `http://localhost:1337/restaurants/${id}/?is_favorite=${updateObj[updateAttribute]}`,
+                  body: {"is_favorite": updateObj[updateAttribute]}
+                }
+
+                dbPromise.then(function (db) {
+                  let tx = db.transaction('pending', 'readwrite');
+                  let pendingStore = tx.objectStore('pending');
+
+                  pendingStore.put(favoriteMessage);
+                }).then(function () {
+                  return reg.sync.register('pending');
+                }).catch(function (err) {
+                  console.log("Error with pending data store: ", err);
+                })
+              }
+            }).catch(function (err) {
+              console.error(err); // the Service Worker didn't install correctly
+            });
+          }
+
           let updateAttribute = updateKeys[key];
           console.log('update""', updateAttribute)
           console.log("restDAta", restaurantData[updateAttribute]);
