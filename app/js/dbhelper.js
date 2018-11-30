@@ -189,13 +189,16 @@ class DBHelper {
       }
 
       const favoriteBtn = document.getElementById(`favorite-icon-${result.restaurantId}`);
+      const favoriteLabel = document.getElementById(`favorite-${result.restaurantId}`);
 
       if (result.isFavorite) {
         favoriteBtn.classList.add("fas");
         favoriteBtn.classList.remove("far");
+        favoriteLabel.setAttribute('aria-label', 'Unfavorite');
       } else {
         favoriteBtn.classList.add("far");
         favoriteBtn.classList.remove("fas");
+        favoriteLabel.setAttribute('aria-label', 'Favorite');
       }
     })
   }
@@ -240,31 +243,45 @@ class DBHelper {
         id: reviewId,
       });
 
+                /* 
+          offline storage help + background sync tutorial:
+          https://www.twilio.com/blog/2017/02/send-messages-when-youre-back-online-with-service-workers-and-background-sync.html
+          */
+         if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('/sw.js').then(function (reg) {
+            if ('sync' in reg) {
+              // do stuff here
+              let data = {
+                "restaurant_id": id,
+                "name": updateObj["name"],
+                "rating": updateObj["rating"],
+                "comments": updateObj["comments"]
+              }
+
+              let favoriteMessage = {
+                method: 'POST',
+                url: `http://localhost:1337/reviews`,
+                body: data
+              }
+
+              dbPromise.then(function (db) {
+                let tx = db.transaction('pending', 'readwrite');
+                let pendingStore = tx.objectStore('pending');
+
+                pendingStore.put(favoriteMessage);
+              }).then(function () {
+                return reg.sync.register('pending');
+              }).catch(function (err) {
+                console.log("Error with pending data store: ", err);
+              })
+            }
+          }).catch(function (err) {
+            console.error(err); // the Service Worker didn't install correctly
+          });
+        }
+
       return tx.complete;
     })
-
-    let data = {
-      "restaurant_id": id,
-      "name": updateObj["name"],
-      "rating": updateObj["rating"],
-      "comments": updateObj["comments"]
-    }
-
-    return fetch(`http://localhost:1337/reviews`, {
-      method: "POST", // *GET, POST, PUT, DELETE, etc.
-      mode: "cors", // no-cors, cors, *same-origin
-      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: "same-origin", // include, *same-origin, omit
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-        // "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: JSON.stringify(data), // body data type must match "Content-Type" header
-    })
-      .then(function (response) {
-        console.log("response", response.json())
-        response.json();
-      }); // parses response to JSON
   }
 
   static updateRestaurantData(id, updateObj) {
@@ -276,7 +293,6 @@ class DBHelper {
       let restaurantsStore = tx.objectStore('restaurants');
 
       restaurantsStore.get("-1").then(function (value) {
-        console.log("value of rest", value);
         // no cache
         if (!value) {
           console.log("No cached data retrieved");
@@ -322,14 +338,10 @@ class DBHelper {
           }
 
           let updateAttribute = updateKeys[key];
-          console.log('update""', updateAttribute)
-          console.log("restDAta", restaurantData[updateAttribute]);
-          console.log("updateObj", updateObj[updateAttribute])
           restaurantData[updateAttribute] = updateObj[updateAttribute];
         }
 
         dbPromise.then(function (db) {
-          console.log("value.data", value.data)
           restaurantsStore.put({ id: "-1", data: value.data });
           return tx.complete;
         })

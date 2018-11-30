@@ -96,11 +96,8 @@ self.addEventListener('fetch', function (event) {
       }
     }
 
-    console.log("event request", event.request.url);
-
     // handle reviews
     if (event.request.url.indexOf("reviews") > -1) {
-      console.log("the reviewwwsss")
       event.respondWith(
         dbPromise.then(function (db) {
           return db.transaction('reviews')
@@ -126,7 +123,6 @@ self.addEventListener('fetch', function (event) {
             })
           })
         }).then(function (finalData) {
-          console.log("fetch final", finalData)
           if (finalData[0].data) {
             let transformResponse = finalData.map(review => review.data);
             return new Response(JSON.stringify(transformResponse));
@@ -200,36 +196,34 @@ function serveImg(request) {
 https://www.twilio.com/blog/2017/02/send-messages-when-youre-back-online-with-service-workers-and-background-sync.html
 */
 self.addEventListener('sync', function (event) {
-  event.waitUntil(
-    // do asynchronous tasks here
-    dbPromise.then(function (db) {
-      let tx = db.transaction('pending', 'readonly');
-      let pendingStore = tx.objectStore('pending');
-      return pendingStore.getAll();
-    }).then(function (dbRequests) {
-      console.log("all req", dbRequests);
-      return Promise.all(dbRequests.map(function (request) {
-        console.log("resquest", request.url);
-        console.log("entire", request)
-        console.log("sdkfnskdnfs?", request.id)
-        return fetch(`${request.url}`, {
-          method: `${request.method}`,
-          body: JSON.stringify(request.body)
-        }).then(function (response) {
-          console.log("response before json", response);
-          console.log("dsta'", response.status)
-          if (response.statusText === 'OK') {
-            return dbPromise.then(function (db) {
-              let tx = db.transaction('pending', 'readwrite');
-              let pendingStore = tx.objectStore('pending');
+  if (event.tag === 'pending') {
+    event.waitUntil(
+      // do asynchronous tasks here
+      dbPromise.then(function (db) {
+        let tx = db.transaction('pending', 'readonly');
+        let pendingStore = tx.objectStore('pending');
+        return pendingStore.getAll();
+      }).then(function (dbRequests) {
+        return Promise.all(dbRequests.map(function (request) {
+          return fetch(`${request.url}`, {
+            method: `${request.method}`,
+            body: JSON.stringify(request.body),
+            headers: {
+              "Content-Type": "application/json; charset=utf-8",
+            }
+          }).then(function (response) {
+            if (response.statusText === 'OK' || response.statusText === 'Created') {
+              return dbPromise.then(function (db) {
+                let tx = db.transaction('pending', 'readwrite');
+                let pendingStore = tx.objectStore('pending');
 
-              console.log("id", request.id)
-              pendingStore.delete(request.id);
-              return tx.complete;
-            })
-          }
-        })
-      }))
-    })
-  );
+                pendingStore.delete(request.id);
+                return tx.complete;
+              })
+            }
+          })
+        }))
+      })
+    );
+  }
 });

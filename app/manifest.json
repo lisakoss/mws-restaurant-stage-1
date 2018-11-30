@@ -1,6 +1,6 @@
 {
   "name": "Udacity MWS Restaurant Reviews",
-  "short_name": "Restaurant Reviews",
+  "short_name": "MWS Reviews",
   "start_url": "index.html",
   "display": "fullscreen",
   "background_color": "#ddd",

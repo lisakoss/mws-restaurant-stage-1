@@ -171,6 +171,7 @@ const createRestaurantHTML = (restaurant) => {
   const name = document.createElement('h2');
   name.innerHTML = restaurant.name;
   name.tabIndex = '0';
+  name.setAttribute('id', `${restaurant.name.replace(/\s/g, "")}`);
   textArea.append(name);
 
   const neighborhood = document.createElement('p');
@@ -202,8 +203,16 @@ const createRestaurantHTML = (restaurant) => {
   const favoriteBtn = document.createElement('button');
   favoriteBtn.classList.add(`favorite-button`);
   const favoriteIcon = document.createElement('i'); // font awesome icon
-  favoriteBtn.id = `favorite-${restaurant.id}`
-  favoriteIcon.id = `favorite-icon-${restaurant.id}`
+  favoriteBtn.id = `favorite-${restaurant.id}`;
+  let labelFavorite;
+  if(!isFavorite) {
+    labelFavorite = 'Favorite';
+  } else {
+    labelFavorite = 'Unfavorite'
+  }
+  favoriteBtn.setAttribute('aria-label', `${labelFavorite}`);
+  favoriteBtn.setAttribute('aria-labelledby', `${restaurant.name.replace(/\s/g, "")}`)
+  favoriteIcon.id = `favorite-icon-${restaurant.id}`;
 
   if (isFavorite) { // a favorite; filled heart
     favoriteIcon.classList.add('fas');

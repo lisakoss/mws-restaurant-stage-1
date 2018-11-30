@@ -141,7 +141,7 @@ const fillReviewsHTML = (error, reviews) => {
   container.appendChild(title);
 
   const writeReview = document.createElement('a');
-  const reviewLinkText = document.createTextNode('Write a Review');
+  const reviewLinkText = document.createTextNode('Submit a Review');
   writeReview.append(reviewLinkText);
   writeReview.title = 'Write a Review';
   writeReview.href = `/review.html?id=${restaurant.id}`;
