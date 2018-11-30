@@ -95,6 +95,6 @@ const saveReview = () => {
       console.log("Review could not be saved");
     }
 
-    //window.location.href = `/restaurant.html?id=${self.restaurant.id}`;
+    window.location.href = `/restaurant.html?id=${self.restaurant.id}`;
   })
 }
