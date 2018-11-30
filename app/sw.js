@@ -212,6 +212,7 @@ self.addEventListener('sync', function (event) {
               "Content-Type": "application/json; charset=utf-8",
             }
           }).then(function (response) {
+            console.log("response", response)
             if (response.statusText === 'OK' || response.statusText === 'Created') {
               return dbPromise.then(function (db) {
                 let tx = db.transaction('pending', 'readwrite');

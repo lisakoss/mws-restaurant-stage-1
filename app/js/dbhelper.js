@@ -270,6 +270,7 @@ class DBHelper {
 
                 pendingStore.put(favoriteMessage);
               }).then(function () {
+                console.log("pending reg")
                 return reg.sync.register('pending');
               }).catch(function (err) {
                 console.log("Error with pending data store: ", err);
