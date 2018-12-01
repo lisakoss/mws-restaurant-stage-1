@@ -390,8 +390,7 @@ nav h1 a {
   text-transform: uppercase;
 }
 
-#restaurant-container, 
-#reviews-container {
+#restaurant-container {
   width: 100%;
 }
 
@@ -401,6 +400,10 @@ nav h1 a {
 
 .review-label {
   font-size: 12pt;
+}
+
+#reviews-container {
+  width: 98%;
 }
 
 #reviews-container a {
